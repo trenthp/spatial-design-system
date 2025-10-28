@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Spatial Design System Explorer</title>
+  <meta name="description" content="Interactive exploration of spatial UI patterns">
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component@1.3.2/dist/aframe-environment-component.min.js"></script>
+  <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+</head>
+<body>
+  <a-scene>
+    <!-- Environment (instant beautiful background) -->
+    <a-entity environment="preset: forest; dressingAmount: 500"></a-entity>
+    
+    <!-- Lighting -->
+    <a-entity light="type: ambient; color: #BBB"></a-entity>
+    <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+    
+    <!-- Welcome Sign -->
+    <a-text value="SPATIAL UI PATTERNS\nWalk around and click objects to explore" 
+            position="0 2.5 -3" 
+            align="center" 
+            color="#ffffff"
+            width="6"></a-text>
+    
+    <!-- PATTERN 1: Billboard Button (Always faces user) -->
+    <a-entity position="-2.5 1.6 -4">
+      <!-- The actual button -->
+      <a-box 
+        id="billboard-btn"
+        color="#4A90E2" 
+        depth="0.1" 
+        height="0.5" 
+        width="1.2"
+        look-at="[camera]"
+        class="clickable"
+        event-set__enter="scale: 1.1 1.1 1.1"
+        event-set__leave="scale: 1 1 1"
+        event-set__click="color: #7FB3FF"
+        animation__click="property: rotation; to: 0 360 0; dur: 1000; startEvents: click">
+        <!-- Button label -->
+        <a-text value="CLICK ME" 
+                position="0 0 0.06" 
+                align="center" 
+                color="#ffffff"
+                width="2"></a-text>
+      </a-box>
+      
+      <!-- Pattern description -->
+      <a-text value="BILLBOARD BUTTON\nAlways faces the user\nUseful for: Critical alerts, attention-grabbing CTAs" 
+              position="0 -0.7 0" 
+              align="center"
+              color="#ffffff"
+              width="3"></a-text>
+    </a-entity>
+    
+    <!-- PATTERN 2: Diegetic Menu (Exists in 3D world) -->
+    <a-entity position="0 1.6 -4">
+      <!-- Holographic panel -->
+      <a-plane 
+        id="diegetic-menu"
+        color="#E24A90" 
+        opacity="0.8"
+        height="1.5" 
+        width="1.2"
+        class="clickable"
+        event-set__click="opacity: 1">
+        
+        <!-- Menu items -->
+        <a-box color="#ffffff" 
+               position="0 0.4 0.01" 
+               depth="0.02" 
+               height="0.2" 
+               width="1"
+               class="clickable"
+               event-set__click="color: #4A90E2">
+          <a-text value="Option 1" position="0 0 0.02" align="center" width="1.5" color="#000000"></a-text>
+        </a-box>
+        
+        <a-box color="#ffffff" 
+               position="0 0 0.01" 
+               depth="0.02" 
+               height="0.2" 
+               width="1"
+               class="clickable"
+               event-set__click="color: #4A90E2">
+          <a-text value="Option 2" position="0 0 0.02" align="center" width="1.5" color="#000000"></a-text>
+        </a-box>
+        
+        <a-box color="#ffffff" 
+               position="0 -0.4 0.01" 
+               depth="0.02" 
+               height="0.2" 
+               width="1"
+               class="clickable"
+               event-set__click="color: #4A90E2">
+          <a-text value="Option 3" position="0 0 0.02" align="center" width="1.5" color="#000000"></a-text>
+        </a-box>
+      </a-plane>
+      
+      <!-- Pattern description -->
+      <a-text value="DIEGETIC MENU\nFixed in 3D space\nUseful for: Persistent controls, spatial context" 
+              position="0 -1.2 0" 
+              align="center"
+              color="#ffffff"
+              width="3"></a-text>
+    </a-entity>
+    
+    <!-- PATTERN 3: Distance-Scaled UI -->
+    <a-entity position="2.5 1.6 -4">
+      <!-- Button that scales with distance -->
+      <a-sphere 
+        id="distance-scaled"
+        color="#90E24A" 
+        radius="0.3"
+        class="clickable"
+        event-set__click="color: #B4FF6E">
+        <a-text value="INFO" 
+                position="0 0 0.31" 
+                align="center" 
+                color="#000000"
+                width="2"></a-text>
+      </a-sphere>
+      
+      <!-- Pattern description -->
+      <a-text value="DISTANCE SCALING\nSize adapts to proximity\nUseful for: Readable UI at any distance" 
+              position="0 -0.7 0" 
+              align="center"
+              color="#ffffff"
+              width="3"></a-text>
+    </a-entity>
+    
+    <!-- Camera rig (player) -->
+    <a-entity id="rig" position="0 1.6 0">
+      <a-camera>
+        <!-- Reticle for mobile (shows what you're looking at) -->
+        <a-cursor
+          color="#4A90E2"
+          fuse="true"
+          fuse-timeout="1500"></a-cursor>
+      </a-camera>
+    </a-entity>
+    
+    <!-- Ground plane for reference -->
+    <a-plane position="0 0 0" 
+             rotation="-90 0 0" 
+             width="100" 
+             height="100" 
+             color="#1A1A1A"
+             opacity="0.3"></a-plane>
+  </a-scene>
+
+  <!-- Add custom distance scaling behavior -->
+  <script>
+    AFRAME.registerComponent('distance-scale', {
+      schema: {
+        minDistance: {type: 'number', default: 1},
+        maxDistance: {type: 'number', default: 10},
+        minScale: {type: 'number', default: 0.5},
+        maxScale: {type: 'number', default: 2}
+      },
+      
+      init: function() {
+        this.camera = document.querySelector('[camera]');
+      },
+      
+      tick: function() {
+        if (!this.camera) return;
+        
+        var distance = this.el.object3D.position.distanceTo(
+          this.camera.object3D.position
+        );
+        
+        var normalizedDistance = Math.max(0, Math.min(1, 
+          (distance - this.data.minDistance) / 
+          (this.data.maxDistance - this.data.minDistance)
+        ));
+        
+        var scale = this.data.minScale + 
+          (this.data.maxScale - this.data.minScale) * normalizedDistance;
+        
+        this.el.setAttribute('scale', {
+          x: scale, 
+          y: scale, 
+          z: scale
+        });
+      }
+    });
+    
+    // Apply distance scaling to the sphere
+    document.querySelector('#distance-scaled').setAttribute('distance-scale', '');
+  </script>
+</body>
+</html>
