@@ -20,6 +20,8 @@
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <script src="https://unpkg.com/aframe-environment-component@1.4.0/dist/aframe-environment-component.min.js"></script>
   <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+  <!-- Movement controls for keyboard, mobile, and VR controllers -->
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 </head>
 <body>
   <a-scene>
@@ -31,7 +33,7 @@
     <a-entity light="type: directional; color: #FFF; intensity: 1" position="-5 10 5" shadow="cast: true; receive: true; shadowMapWidth: 1024; shadowMapHeight: 1024; shadowCameraLeft: -20; shadowCameraRight: 20; shadowCameraTop: 20; shadowCameraBottom: -20; shadowCameraFar: 50; shadowBias: -0.0008; shadowNormalBias: 0.05"></a-entity>
 
     <!-- Welcome Sign -->
-    <a-text value="SPATIAL UI PATTERNS\nWalk around and click objects to explore"
+    <a-text value="SPATIAL UI PATTERNS\n\nControls:\nDesktop: WASD + Mouse\nMobile: Touch joystick + Look around\nVR: Thumbstick + Point with controllers"
             position="0 3 -3"
             align="center"
             color="#ffffff"
@@ -146,16 +148,35 @@
               width="3"></a-text>
     </a-entity>
 
-    <!-- Camera rig (player) -->
-    <a-entity id="rig" position="0 1.6 0">
-      <a-camera>
-        <!-- Reticle for mobile (shows what you're looking at) -->
+    <!-- Camera rig (player) with movement controls -->
+    <a-entity id="rig"
+              movement-controls="fly: false; speed: 0.15; constrainToNavMesh: false"
+              position="0 0 0">
+      <a-camera position="0 1.6 0">
+        <!-- Reticle for desktop/mobile gaze-based interaction -->
         <a-cursor
           color="#4A90E2"
           fuse="true"
           fuse-timeout="1500"
           raycaster="objects: .clickable"></a-cursor>
       </a-camera>
+
+      <!-- VR Controllers (Meta Quest, etc.) -->
+      <!-- Left hand controller -->
+      <a-entity id="leftHand"
+                hand-controls="hand: left; handModelStyle: lowPoly; color: #4A90E2"
+                laser-controls="hand: left"
+                raycaster="objects: .clickable; lineColor: #4A90E2; lineOpacity: 0.5"
+                line="color: #4A90E2; opacity: 0.5">
+      </a-entity>
+
+      <!-- Right hand controller -->
+      <a-entity id="rightHand"
+                hand-controls="hand: right; handModelStyle: lowPoly; color: #4A90E2"
+                laser-controls="hand: right"
+                raycaster="objects: .clickable; lineColor: #4A90E2; lineOpacity: 0.5"
+                line="color: #4A90E2; opacity: 0.5">
+      </a-entity>
     </a-entity>
 
     <!-- Ground plane for shadow receiving but terrible tearing -->
